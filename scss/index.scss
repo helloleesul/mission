@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face { font-family: 'NanumSquareRound'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff'); font-weight: normal; font-style: normal; }
+
+$size-big: 3rem;
+$size-small: 1.5rem;
+$black: #222;
+$white: #fff;
+
+@mixin default-font {
+	font: {
+		family: 'Nunito', 'NanumSquareRound', sans-serif;
+		size: $size-small;
+	}
+}
+
+body {
+	@include default-font;
+	color: $black;
+	box-sizing: border-box;
+}
+
+button, input {
+	@include default-font;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: none;
+}
+
+button {
+	cursor: pointer;
+}
+
+h1 {
+	font: {
+		weight: 300;
+		size: $size-big;
+	}
+	margin: {
+		bottom: $size-big;
+	}
+	span {
+		font: {
+			weight: 900;
+		}
+	}
+}
+
+.container {
+	margin: $size-small auto;
+	width: 70%;
+	padding: $size-big;
+	text-align: center;
+	.group {
+		padding: $size-small;
+		.input-group {
+			margin: {
+				bottom: $size-big;
+			}
+			display: flex;
+			* {
+				padding: $size-small;
+				font-weight: 800;
+			}
+			input {
+				width: 100%;
+				border: 1px solid $black;
+				border-radius: $size-small 0 0 $size-small;
+				&::placeholder {
+					color: #ccc;
+				}
+			}
+			.btn {
+				background: $black;
+				color: $white;
+				padding: $size-small;
+				border-radius: 0 $size-small $size-small 0;
+			}
+		}
+		.list-group {
+			.lists {
+				> li {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					padding: $size-small;
+					border-bottom: 1px solid $black;
+					span {
+						font-weight: 100;
+					}
+					p {
+						font-weight: 800;
+					}
+				}
+			}
+		}
+	}
+}

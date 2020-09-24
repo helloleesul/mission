@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no" />
+		
+		<title>Axios Vue.js</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<section class="container">
+				<h1><span>Axios</span> To do List</h1>
+				
+				<div class="group">
+					<div class="input-group">
+						<input type="text" placeholder="Write down a list of things to do."
+						v-model="title"
+						v-on:keyup.enter="createTodo(title)" />
+						<button class="btn" type="button"
+						v-on:click="createTodo(title)">Enter</button>
+					</div>
+					<div class="list-group">
+						<ul class="lists">
+							<li v-for="(todo,index) in todos">
+								<span>{{todo.id}}</span>
+								<p>{{todo.title}}</p>
+								<div class="btn-group">
+									<button type="button" class="btn" v-on:click="deleteTodo(todo)">&times;</button>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+		</div>
+		
+		<script>
+			var app = new Vue({
+				el: "#app",
+				data: {
+					todos: [
+					]
+				},
+				methods: {
+					deleteTodo(todo) {
+					  this.todos.forEach(function(_todo,i,obj){
+						if(_todo.id === todo.id){
+							axios.delete('https://jsonplaceholder.typicode.com/posts/'+todo.id)
+							.then((result) => {
+							  obj.splice(i, 1)
+						  })
+						}
+					  })
+					  console.log(this.todos[0].id);
+					  console.log(this.todos);
+					},
+					createTodo(title) {
+					  if(title != null){
+						axios.defaults.headers.post['Content-Type'] = 'application/json';
+						axios.post('https://jsonplaceholder.typicode.com/posts',{
+							title:title
+						}).then((result) => {
+							this.todos.push(result.data);
+							this.todos.sort((a,b) => b.id - a.id);
+							
+							console.log(this.todos[0].id);
+							console.log(this.todos);
+						})
+						this.title = null
+					  }
+					},
+					getTodo() {
+						axios.get('https://jsonplaceholder.typicode.com/posts')
+						.then((result) => {
+							// this.todos = result.data;
+							result.data.sort((a,b) => b.id - a.id);
+							for (let i in result.data) {
+								this.todos.push(result.data[i]);
+							}
+							console.log(this.todos[0].id);
+							console.log(this.todos);
+						})
+					}
+				},
+				mounted: function () {
+					this.getTodo();
+				}
+			})
+		</script>
+	</body>
+</html>
