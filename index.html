@@ -19,10 +19,10 @@
 				<div class="group">
 					<div class="input-group">
 						<input type="text" placeholder="Write down a list of things to do."
-						v-model="title"
-						v-on:keyup.enter="createTodo(title)" />
+						v-model="newTodo"
+						v-on:keyup.enter="createTodo()" />
 						<button class="btn" type="button"
-						v-on:click="createTodo(title)">Enter</button>
+						v-on:click="createTodo()">Enter</button>
 					</div>
 					<div class="list-group">
 						<ul class="lists">
@@ -30,7 +30,7 @@
 								<span>{{todo.id}}</span>
 								<p>{{todo.title}}</p>
 								<div class="btn-group">
-									<button type="button" class="btn" v-on:click="deleteTodo(todo)">&times;</button>
+									<button type="button" class="btn" v-on:click="deleteTodo(todo.id,index)">&times;</button>
 								</div>
 							</li>
 						</ul>
@@ -40,52 +40,34 @@
 		</div>
 		
 		<script>
-			var api = 'https://jsonplaceholder.typicode.com/posts';
-			
 			var app = new Vue({
 				el: "#app",
 				data: {
-					todos: [
-					]
+					todos: [],
+					newTodo: '',
 				},
 				methods: {
-					deleteTodo(todo) {
-					  this.todos.forEach(function(_todo,i,obj){
-						if(_todo.id === todo.id){
-							axios.delete(api+'/'+todo.id)
-							.then((result) => {
-							  obj.splice(i, 1)
-						  })
-						}
-					  })
-					  console.log(this.todos[0].id);
-					  console.log(this.todos);
-					},
-					createTodo(title) {
-					  if(title != null){
-						axios.defaults.headers.post['Content-Type'] = 'application/json';
-						axios.post(api,{
-							title:title
-						}).then((result) => {
-							this.todos.push(result.data);
-							this.todos.sort((a,b) => b.id - a.id);
-							
-							console.log(this.todos[0].id);
-							console.log(this.todos);
+					deleteTodo(id,index) {
+						axios.delete('https://jsonplaceholder.typicode.com/posts'+'/'+id)
+						.then((res) => {
+							this.todos.splice(index, 1);
 						})
-						this.title = null
-					  }
+					},
+					createTodo() {
+						axios.defaults.headers.post['Content-Type'] = 'application/json';
+						axios.post('https://jsonplaceholder.typicode.com/posts',{
+							title:this.newTodo
+						}).then((res) => {
+							this.todos.push(res.data);
+							this.newTodo='';
+							this.todos.sort((a,b) => b.id - a.id);
+						})
 					},
 					getTodo() {
-						axios.get(api)
-						.then((result) => {
-							// this.todos = result.data;
-							result.data.sort((a,b) => b.id - a.id);
-							for (let i in result.data) {
-								this.todos.push(result.data[i]);
-							}
-							console.log(this.todos[0].id);
-							console.log(this.todos);
+						axios.get('https://jsonplaceholder.typicode.com/posts')
+						.then((res) => {
+							this.todos = res.data;
+							this.todos.sort((a,b) => b.id - a.id);
 						})
 					}
 				},
