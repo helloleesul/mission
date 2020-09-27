@@ -48,7 +48,7 @@
 				},
 				methods: {
 					deleteTodo(id,index) {
-						axios.delete('https://jsonplaceholder.typicode.com/posts'+'/'+id)
+						axios.delete('https://jsonplaceholder.typicode.com/posts/'+id)
 						.then((res) => {
 							this.todos.splice(index, 1);
 						})
