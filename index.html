@@ -60,6 +60,7 @@
 						})
 					},
 					createTodo() {
+						// keyup enter 했을 때 한글로 적으면 2번 입력됨 (왜지!)
 						axios.defaults.headers.post['Content-Type'] = 'application/json';
 						axios.post('https://jsonplaceholder.typicode.com/posts',{
 							title:this.newTodo
