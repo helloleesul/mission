@@ -15,7 +15,6 @@
 		<div id="app">
 			<section class="container">
 				<h1><span>Axios</span> To do List</h1>
-				
 				<div class="group">
 					<div class="input-group">
 						<input type="text" placeholder="Write down a list of things to do."
@@ -30,7 +29,10 @@
 								<span>{{todo.id}}</span>
 								<p>{{todo.title}}</p>
 								<div class="btn-group">
-									<button type="button" class="btn" v-on:click="deleteTodo(todo.id,index)">&times;</button>
+									<button type="button" class="btn" v-on:click="toggleMenu(index)">&middot;&middot;&middot;</button>
+									<ul class="dropdown-menu" :class="{active: index === activeMenu}">
+										<li><button type="button" class="btn" v-on:click="deleteTodo(todo.id,index)">delete</button></li>
+							        </ul>
 								</div>
 							</li>
 						</ul>
@@ -45,8 +47,12 @@
 				data: {
 					todos: [],
 					newTodo: '',
+					activeMenu: false,
 				},
 				methods: {
+					toggleMenu(i) {
+				       this.activeMenu = i;
+				    },
 					deleteTodo(id,index) {
 						axios.delete('https://jsonplaceholder.typicode.com/posts/'+id)
 						.then((res) => {
