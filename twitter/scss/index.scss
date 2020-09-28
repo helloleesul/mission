@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face { font-family: 'NanumSquareRound'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff'); font-weight: normal; font-style: normal; }
+
+$shadow: 0 5px 20px -10px rgba(0,0,0,.5);
+$white: #fff;
+$blue: #1DA2F1;
+$grey: #E6ECF0;
+
+@mixin default-font {
+	font: {
+		family: 'Roboto', 'NanumSquareRound', sans-serif;
+		size: 1.2rem;
+	}
+}
+
+@mixin side-box {
+	position: fixed;
+	width: 30%;
+	top: 0;
+	height: 100%;
+	z-index: 1;
+	.wrap {
+		width: 50%;
+		padding: 1rem;
+	}
+}
+
+@mixin profile-img {
+	width: 12%;
+	figure {
+		width: 64px;
+		height: 64px;
+		background-color: $grey;
+		border-radius: 64px;
+		overflow: hidden;
+	}
+}
+
+body {
+	@include default-font;
+	color: #222;
+	box-sizing: border-box;
+}
+
+.alttxt {
+	position: absolute;
+	left: -9999999px;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+input, button {
+	border: none;
+	background: none;
+	outline: none;
+	@include default-font;
+}
+
+button {
+	cursor: pointer;
+}
+
+.btn {
+	font: {
+		size: 1rem;
+		weight: 700;
+	}
+	background-color: $blue;
+	color: $white;
+	padding: .8rem 1.2rem;
+	border-radius: 2rem;
+	cursor: pointer;
+}
+
+.container {
+	width: 100%;
+	position: relative;
+	margin: 0 auto;
+	header {
+		@include side-box;
+		left: 0;
+		display: flex;
+		justify-content: flex-end;
+		border-right: 1px solid $grey;
+		i {
+			font-size: 1.6rem;
+			margin-right: 1rem;
+			&:before {
+				vertical-align: middle;
+			}
+			&.icon-twitter {
+				margin: 0;
+			}
+		}
+		li {
+			margin-bottom: 2rem;
+			font-weight: 700;
+			&.active, &:hover, &.logo {
+				color: $blue;
+			}
+			&.logo a {
+				padding: .6rem;
+			}
+			&:hover a {
+				background-color: #EBF5FE;
+			}
+			a {
+				border-radius: 100px;
+				padding: {
+					top: .6rem; right: 1.4rem; bottom: .6rem; left: .6rem;
+				}
+				transition: .2s ease-in-out all;
+			}
+		}
+	}
+	main {
+		#timeline {
+			width: 40%;
+			margin: 0 auto;
+			.title {
+					position: fixed;
+					border-bottom: 1px solid $grey;
+					border-left: 1px solid $grey;
+					width: inherit;
+					padding: 1rem;
+					font-weight: 900;
+					background-color: $white;
+					box-sizing: border-box;
+					z-index: 1
+				}
+			.post-container {
+				padding-top: 53px;
+				.write-box {
+					border-bottom: 10px solid $grey;
+					padding: 1rem;
+					display: flex;
+					.profile-img {
+						@include profile-img;
+					}
+					.input-group {
+						width: 88%;
+						input {
+							width: 100%;
+							padding: 1rem 0;
+							box-sizing: border-box;
+							&::placeholder {
+								color: #657685;
+							}
+						}
+						.submit-group {
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							padding-top: 1rem;
+							ul {
+								display: flex;
+								li {
+									margin-right: 1rem;
+									button {
+										padding: 0;
+									}
+								}
+								i {
+									color: $blue;
+									&:before {
+										margin: 0;
+									}
+								}
+							}
+						}
+					}
+				}
+				.post-box {
+					padding: 1rem;
+					border-bottom: 1px solid $grey;
+					cursor: pointer;
+					transition: .2s ease-in-out all;
+					&:hover {
+						background-color: #F6F8FA;
+					}
+					.post-wrap {
+						display: flex;
+						position: relative;
+						.profile-img {
+							@include profile-img;
+						}
+						.post-group {
+							width: 88%;
+							.name {
+								font: {
+									size: 1rem;
+									weight: 800;
+								}
+							}
+							.body {
+								padding-top: 1rem;
+								font-size: 1rem;
+								line-height: 1.4;
+							}
+						}
+						.btn-group {
+							position: absolute;
+							right: 0; top: 0;
+							>button {
+								line-height: 1;
+							}
+							.dropdown-menu {
+								display: none;
+								position: absolute;
+								right: 0;
+								&.active {
+									display: block;
+								}
+								button {
+									background-color: $white;
+									color: $blue;
+									box-shadow: $shadow;
+									&:hover {
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		#side {
+			@include side-box;
+			right: 0;
+			display: flex;
+			justify-content: flex-start;
+			border-left: 1px solid $grey;
+		}
+	}
+}

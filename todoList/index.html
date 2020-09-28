@@ -29,8 +29,8 @@
 								<span>{{todo.id}}</span>
 								<p>{{todo.title}}</p>
 								<div class="btn-group">
-									<button type="button" class="btn" v-on:click="toggleMenu(index)">&middot;&middot;&middot;</button>
-									<ul class="dropdown-menu" :class="{active: index === activeMenu}">
+									<button type="button" class="btn" v-on:click="clickMenu(index)">&middot;&middot;&middot;</button>
+									<ul class="dropdown-menu" :class="{active: index == activeMenu}">
 										<li><button type="button" class="btn" v-on:click="deleteTodo(todo.id,index)">delete</button></li>
 							        </ul>
 								</div>
@@ -47,11 +47,12 @@
 				data: {
 					todos: [],
 					newTodo: '',
-					activeMenu: false,
+					activeMenu: null,
 				},
 				methods: {
-					toggleMenu(i) {
+					clickMenu(i) {
 				        this.activeMenu = i;
+				        // toggle 안됨. addClass일 때, 클릭하면 removeClass 시켜야 함 (?)
 				    },
 					deleteTodo(id,index) {
 						axios.delete('https://jsonplaceholder.typicode.com/posts/'+id)
@@ -60,7 +61,7 @@
 						})
 					},
 					createTodo() {
-						// keyup enter 했을 때 한글로 적으면 2번 입력됨 (왜지!)
+						// keyup enter 실행 시 한글로 적으면 2번 입력됨 (?)
 						axios.defaults.headers.post['Content-Type'] = 'application/json';
 						axios.post('https://jsonplaceholder.typicode.com/posts',{
 							title:this.newTodo

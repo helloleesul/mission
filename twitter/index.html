@@ -8,16 +8,176 @@
 		
 		<link rel="stylesheet" type="text/css" href="css/reset.css" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link rel="stylesheet" href="css/fontello/css/fontello-embedded.css">
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
 	</head>
 	<body>
 		<div id="app">
-
+			<div class="container">
+				<header>
+					<div class="wrap">
+						<nav>
+							<ul>
+								<li class="logo"><h1><a href="/">
+									<i class="icon-twitter"></i>
+									<span class="alttxt">Twitter</span>
+								</a></h1></li>
+								<li class="active"><a href="/"><i class="icon-home"></i>Home</a></li>
+								<li><a href="/"><i class="icon-hash"></i>Explore</a></li>
+								<li><a href="/"><i class="icon-bell"></i>Notifications</a></li>
+								<li><a href="/"><i class="icon-mail"></i>Messages</a></li>
+								<li><a href="/"><i class="icon-bookmark-empty"></i>Bookmarks</a></li>
+								<li><a href="/"><i class="icon-list-bullet"></i>Lists</a></li>
+								<li><a href="/"><i class="icon-user-o"></i>Profile</a></li>
+								<li><a href="/"><i class="icon-ellipsis"></i>More</a></li>
+							</ul>
+						</nav>
+					</div>
+				</header>
+				<!-- header -->
+				<main>
+					<section id="timeline">
+						<h2 class="title">Home</h2>
+						<div class="wrap">
+							<div class="post-container">
+								<div class="write-box">
+									<div class="profile-img">
+										<figure><img src="" alt="" /></figure>
+									</div>
+									<div class="input-group">
+										<input type="text" placeholder="What's happening? (please press the tweet button.)" 
+										v-model="newTweet" />
+										<div class="submit-group">
+											<ul>
+												<li><button type="button"><i class="icon-picture"></i></button></li>
+												<li><button type="button"><i class="icon-chart-bar"></i></button></li>
+												<li><button type="button"><i class="icon-smile"></i></button></li>
+												<li><button type="button"><i class="icon-calendar-empty"></i></button></li>
+											</ul>
+											<button class="btn" type="button" v-on:click="createTweet()">Tweet</button>
+										</div>
+									</div>
+								</div>
+								<!-- write-box -->
+								
+								<div v-for="(post, index) in posts" class="post-box">
+									<div class="post-wrap">
+										<div class="profile-img">
+											<figure><img src="" alt="" /></figure>
+										</div>
+										<div class="post-group">
+											<span class="id">{{post.id}}</span>
+											<span class="name">{{post.title}}</span>
+											<p class="body">{{post.body}}</p>
+										</div>
+										<div class="btn-group">
+											<button type="button" 
+											v-on:click="toggleMenu($event, post)">&middot;&middot;&middot;</button>
+											<ul class="dropdown-menu" 
+											v-if="post.active"
+											:class="{active: post.active}">
+												<li><button type="button" class="btn" v-on:click="deleteTweet(post.id,index)">delete</button></li>
+									        </ul>
+										</div>
+									</div>
+								</div>
+								<!-- post-box -->
+							</div>
+							<div class="loader" v-if="isLoading"></div>
+						</div>
+						<!-- post-container -->
+					</section>
+					<!-- timeline -->
+					<section id="side">
+						<div class="wrap">
+							<div class="side-container">
+								side
+							</div>
+						</div>
+					</section>
+					<!-- side -->
+				</main>
+				<!-- main -->
+			</div>
+			<!-- container -->
 		</div>
+		<!-- app -->
 		
-		<script>
-
+		<script>		
+			new Vue({
+				el: "#app",
+				data: {
+					endOfTheScreen: false,
+					isLoading: false,
+					// page: data length / limit = page -> 데이터 총 갯수 / 제한 갯수 = 페이지 수 로 설정되어야 함.
+					// 소숫점 나오면 ..??
+					page: 10,
+					limit: 10,
+					posts: [],
+					autoLoading: true,
+					newTweet: '',
+				},
+				//  watch: 감시자 역할, 지정한 대산의 값이 변경될 때마다 정의한 함수가 실행.
+				watch: {
+					endOfTheScreen(endOfTheScreen) {
+						if (endOfTheScreen === true && this.autoLoading) {
+							this.page -= 1;
+							this.loadPosts(this.page, this.limit);
+						}
+					}
+				},
+				//  created: 데이터 초기화에 대한 목적.
+				created() {
+					window.onscroll = () => {
+						this.endOfTheScreen = this.scrollCheck();
+					};
+					this.loadPosts();
+				},
+				methods: {
+					toggleMenu($event, post) {
+				        if (post.active) {
+					        post.active = false;
+				        } else if (!post.active) {
+					        Vue.set(post, 'active', true);
+					    }
+				    },
+					createTweet() {
+						axios.defaults.headers.post['Content-Type'] = 'application/json';
+						axios.post('https://jsonplaceholder.typicode.com/posts',{
+							title:'Sul', body:this.newTweet
+						}).then((res) => {
+							this.posts.push(res.data);
+							this.newTweet='';
+							this.posts.sort((a,b) => b.id - a.id);
+						})
+					},
+					deleteTweet(id,index) {
+						axios.delete('https://jsonplaceholder.typicode.com/posts/' + id)
+						.then((res) => {
+							this.posts.splice(index, 1);
+						})
+					},
+					scrollCheck() {
+						return window.scrollY + window.innerHeight === document.documentElement.offsetHeight;
+					},
+					loadPosts(page = this.page, limit = this.limit) {
+						this.isLoading = true;
+						const self = this;
+						setTimeout(function() {
+							axios.get('https://jsonplaceholder.typicode.com/posts' + "?_page=" + page + "&_limit=" + limit)
+							.then((res) => {
+								for (let i in res.data.reverse()) {
+									self.posts.push(res.data[i]);
+								}
+								self.isLoading = false;
+							});
+						}, 500);
+					}
+				}
+				
+				// page = 1 일 때는 loadPosts 제어..?
+			})
 		</script>
 	</body>
 </html>
