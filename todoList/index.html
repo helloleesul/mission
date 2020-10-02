@@ -91,7 +91,7 @@
 						}
 					},
 					getTodo() {
-						axios.get('https://my-json-server.typicode.com/helloleesul/demo/posts')
+						axios.get('https://jsonplaceholder.typicode.com/posts')
 						.then((res) => {
 							this.todos = res.data;
 							
