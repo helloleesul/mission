@@ -19,10 +19,12 @@
 					<div class="wrap">
 						<nav>
 							<ul>
+<!--
 								<li class="logo"><h1><a href="/">
 									<i class="icon-twitter"></i>
 									<span class="alttxt">Twitter</span>
 								</a></h1></li>
+-->
 								<li class="active"><a href="/"><i class="icon-home"></i>Home</a></li>
 								<li><a href="/"><i class="icon-hash"></i>Explore</a></li>
 								<li><a href="/"><i class="icon-bell"></i>Notifications</a></li>
@@ -46,8 +48,9 @@
 										<figure><img src="" alt="" /></figure>
 									</div>
 									<div class="input-group">
-										<input type="text" placeholder="What's happening? (please press the tweet button.)" 
-										v-model="newTweet" />
+										<input type="text" placeholder="What's happening?" 
+										v-model="newTweet"
+										v-on:keyup.enter="createTweet(newTweet)" />
 										<div class="submit-group">
 											<ul>
 												<li><button type="button"><i class="icon-picture"></i></button></li>
@@ -55,7 +58,7 @@
 												<li><button type="button"><i class="icon-smile"></i></button></li>
 												<li><button type="button"><i class="icon-calendar-empty"></i></button></li>
 											</ul>
-											<button class="btn" type="button" v-on:click="createTweet()">Tweet</button>
+											<button class="btn" type="button" v-on:click="createTweet(newTweet)">Tweet</button>
 										</div>
 									</div>
 								</div>
@@ -67,9 +70,9 @@
 											<figure><img src="" alt="" /></figure>
 										</div>
 										<div class="post-group">
-											<span class="id">{{post.id}}</span>
-											<span class="name">{{post.title}}</span>
-											<p class="body">{{post.body}}</p>
+<!-- 											<span class="id">{{ post.id }}</span> -->
+											<span class="name">{{ post.title }}</span>
+											<p class="body">{{ post.body }}</p>
 										</div>
 										<div class="btn-group">
 											<button type="button" 
@@ -104,29 +107,31 @@
 		</div>
 		<!-- app -->
 		
-		<script>		
+		<script>
+			var myName = 'Sul';
+			
 			new Vue({
 				el: "#app",
 				data: {
 					endOfTheScreen: false,
 					isLoading: false,
-					// page: data length / limit = page -> 데이터 총 갯수 / 제한 갯수 = 페이지 수 로 설정되어야 함.
-					// 소숫점 나오면 ..??
-					page: 10,
+					page: 1,
 					limit: 10,
 					posts: [],
 					autoLoading: true,
 					newTweet: '',
 				},
+				
 				//  watch: 감시자 역할, 지정한 대산의 값이 변경될 때마다 정의한 함수가 실행.
 				watch: {
 					endOfTheScreen(endOfTheScreen) {
 						if (endOfTheScreen === true && this.autoLoading) {
-							this.page -= 1;
+							this.page += 1;
 							this.loadPosts(this.page, this.limit);
 						}
 					}
 				},
+				
 				//  created: 데이터 초기화에 대한 목적.
 				created() {
 					window.onscroll = () => {
@@ -134,6 +139,7 @@
 					};
 					this.loadPosts();
 				},
+				
 				methods: {
 					toggleMenu($event, post) {
 				        if (post.active) {
@@ -142,15 +148,16 @@
 					        Vue.set(post, 'active', true);
 					    }
 				    },
-					createTweet() {
-						axios.defaults.headers.post['Content-Type'] = 'application/json';
-						axios.post('https://jsonplaceholder.typicode.com/posts',{
-							title:'Sul', body:this.newTweet
-						}).then((res) => {
-							this.posts.push(res.data);
-							this.newTweet='';
-							this.posts.sort((a,b) => b.id - a.id);
-						})
+					createTweet(newTweet) {
+						if (newTweet != null) {
+							axios.defaults.headers.post['Content-Type'] = 'application/json';
+							axios.post('https://jsonplaceholder.typicode.com/posts',{
+								title: myName, body: this.newTweet
+							}).then((res) => {
+								this.posts.unshift(res.data);
+							})
+							this.newTweet = null;
+						}
 					},
 					deleteTweet(id,index) {
 						axios.delete('https://jsonplaceholder.typicode.com/posts/' + id)
@@ -167,7 +174,7 @@
 						setTimeout(function() {
 							axios.get('https://jsonplaceholder.typicode.com/posts' + "?_page=" + page + "&_limit=" + limit)
 							.then((res) => {
-								for (let i in res.data.reverse()) {
+								for (let i in res.data) {
 									self.posts.push(res.data[i]);
 								}
 								self.isLoading = false;
@@ -175,8 +182,6 @@
 						}, 500);
 					}
 				}
-				
-				// page = 1 일 때는 loadPosts 제어..?
 			})
 		</script>
 	</body>
