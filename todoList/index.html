@@ -27,7 +27,9 @@
 						<ul class="lists">
 							<li v-for="(todo,index) in todos">
 								<span>{{ index }}</span>
-								<p><span>{{ todo.id }}</span> {{ todo.title }}</p>
+								<p>
+<!-- 									<span>{{ todo.id }}</span> -->
+									{{ todo.title }}</p>
 								<div class="btn-group">
 									<button type="button" class="btn" v-on:click="deleteTodo(id,index)">&times;</button>
 								</div>
