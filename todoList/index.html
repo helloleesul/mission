@@ -29,7 +29,7 @@
 								<span>{{ index }}</span>
 								<p><span>{{ todo.id }}</span> {{ todo.title }}</p>
 								<div class="btn-group">
-									<button type="button" class="btn" v-on:click="deleteTodo(index)">&times;</button>
+									<button type="button" class="btn" v-on:click="deleteTodo(id,index)">&times;</button>
 								</div>
 <!--
 								<div class="btn-group">
@@ -60,31 +60,20 @@
 				        this.activeMenu = i;
 				        // toggle 안됨. addClass일 때, 클릭하면 removeClass 시켜야 함 (?)
 				    },
-				    deleteTodo(id,index) {	
-						axios.delete('https://jsonplaceholder.typicode.com/posts/'+id)
+*/
+					deleteTodo(id,index) {
+						axios.delete('https://jsonplaceholder.typicode.com/posts/' + id)
 						.then((res) => {
 							this.todos.splice(index, 1);
 						})
 					},
 					createTodo(newTodo) {
-						if(newTodo != null) {
+						if (newTodo != null) {
 							axios.defaults.headers.post['Content-Type'] = 'application/json';
 							axios.post('https://jsonplaceholder.typicode.com/posts',{
 								title: this.newTodo
 							}).then((res) => {
 								this.todos.unshift(res.data);
-							})
-							this.newTodo = null;
-						}
-					},
-*/
-					deleteTodo(index) {
-						this.todos.splice(index, 1);
-					},
-					createTodo(newTodo) {
-						if (newTodo != null) {
-							this.todos.unshift({
-								title: this.newTodo
 							})
 							this.newTodo = null;
 						}
