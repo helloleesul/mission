@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no" />
+		
+		<title>Social Timeline</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link rel="stylesheet" href="css/fontello/css/fontello-embedded.css">
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="container">
+				<header>
+					<div class="wrap">
+						<div class="search">
+							<input type="search" placeholder="Search" />
+						</div>
+						<div class="profile">
+							<div class="profile-img">
+								<figure><img src="member.jpg" alt="member" /></figure>
+							</div>
+							<h1>Sul Lee</h1>
+							<span>Web publisher</span>
+						</div>
+						<nav>
+							<ul>
+								<li class="active"><a href="/"><i class="icon-home"></i>Feed</a></li>
+								<li><a href="/"><i class="icon-chart"></i>Activity</a></li>
+								<li><a href="/"><i class="icon-mail"></i>Message</a></li>
+								<li><a href="/"><i class="icon-picture"></i>Gallery</a></li>
+							</ul>
+							<ul>
+								<li><a href="/"><i class="icon-setting"></i>Settings</a></li>
+								<li><a href="/"><i class="icon-user"></i>Log out</a></li>
+							</ul>
+						</nav>
+					</div>
+				</header>
+				<!-- header -->
+				<main>
+					<section id="timeline">
+						<div class="post-container">
+							<div class="write-box">
+								<div class="input-group">
+									<textarea placeholder="Write something..."
+									v-model="newPost"
+									v-on:keyup.enter="createPost(newPost)"></textarea>
+								</div>
+								<div class="submit-group">
+									<button class="btn" type="button" v-on:click="createPost(newPost)">Post</button>
+								</div>
+							</div>
+							<!-- write-box -->
+							
+							<div v-for="(post, index) in posts" class="post-box">
+								<div class="post-wrap">
+									<div class="profile-img">
+										<figure><img src="member.png" alt="member" /></figure>
+									</div>
+									<div class="post-group">
+										<span class="name">{{ post.title }}</span>
+										<p class="body">{{ post.body }}</p>
+									</div>
+									<div class="btn-group">
+										<button type="button" 
+										v-on:click="toggleMenu($event, post)">&middot;&middot;&middot;</button>
+										<ul class="dropdown-menu" 
+										v-if="post.active"
+										:class="{active: post.active}">
+											<li><button type="button" class="btn" v-on:click="deletePost(post.id,index)">delete</button></li>
+								        </ul>
+									</div>
+								</div>
+							</div>
+							<!-- post-box -->
+						</div>
+						<!-- post-container -->
+					
+						<div class="loader" v-if="isLoading">
+							<div id="loading-box"></div>
+						</div>
+					</section>
+					<!-- timeline -->
+					<section id="side">
+						<div class="side-container">
+							<aside class="popular">
+								<div class="popular-img">
+									<figure><img src="popular.jpg" alt="popular" /></figure>
+								</div>
+								<div class="description">
+									<span>Popular</span>
+									<h2>Lorem ipsum dolor sit amet</h2>
+									<p>consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+								</div>
+							</aside>
+							<aside class="people">
+								<h2>Suggested people</h2>
+								<ul>
+									<li v-for="person in people">
+										<div class="profile-img">
+											<figure><img src="people.jpg" alt="people" /></figure>
+										</div>
+										<div class="info">
+											<p>{{ person.name }}</p>
+											<span>{{ person.job }}</span>
+										</div>
+									</li>
+								</ul>
+							</aside>
+						</div>
+					</section>
+				</main>
+				<!-- main -->
+			</div>
+			<!-- container -->
+		</div>
+		<!-- app -->
+		
+		<script>
+			var myName = 'Sul Lee';
+			
+			new Vue({
+				el: "#app",
+				data: {
+					endOfTheScreen: false,
+					isLoading: false,
+					page: 1,
+					limit: 10,
+					posts: [],
+					autoLoading: true,
+					newPost: '',
+					people: [
+						{
+							name: 'Susana Mendis',
+							job: 'Photographer',
+						},
+						{
+							name: 'Neel Litoriya',
+							job: 'Fashion Designer',
+						},
+						{
+							name: 'Barbara Doe',
+							job: 'Model',
+						},
+					]
+				},
+				
+				//  watch: 감시자 역할, 지정한 대산의 값이 변경될 때마다 정의한 함수가 실행.
+				watch: {
+					endOfTheScreen(endOfTheScreen) {
+						if (endOfTheScreen === true && this.autoLoading) {
+							this.page += 1;
+							this.loadPosts(this.page, this.limit);
+						}
+					}
+				},
+				
+				//  created: 데이터 초기화에 대한 목적.
+				created() {
+					window.onscroll = () => {
+						this.endOfTheScreen = this.scrollCheck();
+					};
+					this.loadPosts();
+				},
+				
+				methods: {
+					toggleMenu($event, post) {
+				        if (post.active) {
+					        post.active = false;
+				        } else if (!post.active) {
+					        Vue.set(post, 'active', true);
+					    }
+				    },
+					createPost(newPost) {
+						if (newPost != null) {
+							axios.defaults.headers.post['Content-Type'] = 'application/json';
+							axios.post('https://jsonplaceholder.typicode.com/posts',{
+								title: myName, body: this.newPost
+							}).then((res) => {
+								this.posts.unshift(res.data);
+							})
+							this.newPost = null;
+						}
+					},
+					deletePost(id,index) {
+						axios.delete('https://jsonplaceholder.typicode.com/posts/' + id)
+						.then((res) => {
+							this.posts.splice(index, 1);
+						})
+						
+						console.log(this.posts)
+					},
+					scrollCheck() {
+						return window.scrollY + window.innerHeight === document.documentElement.offsetHeight;
+					},
+					loadPosts(page = this.page, limit = this.limit) {
+						this.isLoading = true;
+						const self = this;
+						setTimeout(function() {
+							axios.get('https://jsonplaceholder.typicode.com/posts' + "?_page=" + page + "&_limit=" + limit)
+							.then((res) => {
+								for (let i in res.data) {
+									self.posts.push(res.data[i]);
+								}
+								self.isLoading = false;
+							});
+						}, 500);
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

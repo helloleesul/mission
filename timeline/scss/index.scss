@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face { font-family: 'NanumSquareRound'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff'); font-weight: normal; font-style: normal; }
+
+$shadow: 5px 5px 30px -15px rgba(black, .3);
+$white: #fff;
+$color: #FFAE1E;
+$grey: rgba(#D8D9E1, .3);
+$lightgrey: #D8D9E1;
+$border: 1px solid $grey;
+$left-width: 20%;
+$right-width: 60%;
+$per100: 100%;
+
+@mixin default-font {
+	font: {
+		family: 'Roboto', 'NanumSquareRound', sans-serif;
+		size: 1.2rem;
+	}
+}
+
+@mixin profile-img {
+	margin-right: 1rem;
+	figure {
+		box-shadow: $shadow;
+		width: 80px;
+		height: 80px;
+		border-radius: 64px;
+		overflow: hidden;
+		img {
+			width: $per100;
+		}
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+*::selection {
+	background: $color;
+	color: $white;
+}
+
+body {
+	@include default-font;
+	color: #222;
+	background-color: $grey;
+}
+
+.alttxt {
+	position: absolute;
+	left: -9999999px;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+input, button, textarea {
+	border: none;
+	background: none;
+	outline: none;
+	padding: 0;
+	@include default-font;
+}
+
+button {
+	cursor: pointer;
+}
+
+.btn {
+	font: {
+		size: 1rem;
+		weight: 700;
+	}
+	background-color: $color;
+	color: $white;
+	padding: .8rem 1.2rem;
+	border-radius: 2rem;
+	cursor: pointer;
+	box-shadow: $shadow;
+}
+
+#loading-box {
+	width: 2rem;
+	height: 2rem;
+	background-color: $color;
+	animation: loading 1s infinite linear;
+	margin: 0 auto;
+}
+
+@keyframes loading {
+    0% {   transform: rotate(0deg); border-radius: $per100; }
+    50% {  transform: rotate(90deg); border-radius: 0; }
+    100% { transform: rotate(180deg); border-radius: $per100; }
+}
+
+.container {
+	position: relative;
+	margin: 0 auto;
+}
+
+header {
+	width: $left-width;
+	height: $per100;
+	padding: 3rem;
+	position: fixed;
+	left: 0; top: 0;
+	background-color: $white;
+	box-shadow: $shadow;
+	.wrap {
+		display: flex;
+		flex-direction: column;
+		height: $per100;
+		justify-content: space-between;
+	}
+	i {
+		font-size: 1.6rem;
+		margin-right: 1rem;
+		&:before {
+			vertical-align: middle;
+			margin: 0;
+		}
+	}
+	ul {
+		margin-bottom: 5rem;
+	}
+	li {
+		margin-top: 2rem;
+		font-weight: 600;
+		&.active {
+			color: $color;
+		}
+	}
+	.profile {
+		.profile-img {
+			@include profile-img;
+			margin-bottom: 2rem;
+		}
+	}
+}
+
+main {
+	width: $right-width;
+	margin-left: $left-width;
+}
+
+#timeline {
+	padding: 1.5rem;
+	.post-container {
+		background-color: $white;
+		box-shadow: $shadow;
+		border-radius: .5rem;
+		overflow: hidden;
+	}
+}
+
+.write-box {
+	padding: 2rem;
+	background-color: rgba($color, .3);
+	.profile-img {
+		@include profile-img;
+	}
+	.input-group {
+		width: $per100;
+		textarea {
+			resize: none;
+			height: 8rem;
+			width: inherit;
+			&::placeholder {
+				color: $white;
+			}
+		}
+	}
+	.submit-group {
+		
+	}
+}
+
+.post-box {
+	padding: 2rem;
+	transition: .2s ease-in-out all;
+	border-bottom: $border;
+	.post-wrap {
+		display: flex;
+		transition: all .2s ease-in-out;
+		.profile-img {
+			@include profile-img;
+		}
+		.post-group {
+			width: $per100;
+			.name {
+				font: {
+					weight: 600;
+				}
+				margin-bottom: 1rem;
+				display: block;
+			}
+			.body {
+				line-height: 1.4;
+			}
+		}
+		.btn-group {
+			position: relative;
+			margin-left: 1rem;
+			>button {
+				line-height: 1;
+				&:hover {
+					color: $color;
+				}
+			}
+			.dropdown-menu {
+				position: absolute;
+				right: 0;
+			}
+		}
+	}
+}
+
+.loader {
+	padding: 2rem 0;
+}
+
+#side {
+	width: $left-width;
+	height: $per100;
+	padding-left: 0;
+	position: fixed;
+	right: 0; top: 0;
+	.side-container {
+		height: $per100;
+		padding: 1.5rem;
+		padding-left: 0;
+		display: grid;
+		grid-gap: 2rem;
+		grid-template-columns: $per100;
+	}
+}
+
+aside {
+	background-color: $white;
+	border-radius: .5rem;
+	overflow: scroll;
+	box-shadow: $shadow;
+}
+
+.popular {
+	.popular-img {
+		height: 240px;
+		overflow: scroll;
+	}
+	img {
+		width: $per100;
+	}
+	.description {
+		padding: 2rem;
+		span {
+			color: $color;
+			font-size: 1rem;
+			font-weight: 600;
+		}
+		h2 {
+			margin: 1rem 0;
+			font-weight: 600;
+		}
+		p {
+			font-size: 1rem;
+			line-height: 1.4;
+			color: $lightgrey;
+		}
+	}
+}
+
+.people {
+	padding: 2rem;
+	.profile-img {
+		@include profile-img;
+	}
+	li {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 1rem;
+		.info {
+			width: $per100;
+		}
+	}
+	h2 {
+		font-weight: 600;
+		margin-bottom: 2rem;
+	}
+	p {
+		font-size: 1rem;
+		color: $color;
+		font-weight: 600;
+		margin-bottom: .2rem;
+	}
+	span {
+		color: $lightgrey;
+		font-size: .8rem;
+	}
+}
