@@ -18,6 +18,7 @@
 				<header>
 					<div class="wrap">
 						<div class="search">
+							<i class="icon-search"></i>
 							<input type="search" placeholder="Search" />
 						</div>
 						<div class="profile">
@@ -29,14 +30,14 @@
 						</div>
 						<nav>
 							<ul>
-								<li class="active"><a href="/"><i class="icon-home"></i>Feed</a></li>
-								<li><a href="/"><i class="icon-chart"></i>Activity</a></li>
-								<li><a href="/"><i class="icon-mail"></i>Message</a></li>
-								<li><a href="/"><i class="icon-picture"></i>Gallery</a></li>
+								<li class="active"><a href="/"><i class="icon-home"></i><span>Feed</span></a></li>
+								<li><a href="/"><i class="icon-chart"></i><span>Activity</span></a></li>
+								<li><a href="/"><i class="icon-mail"></i><span>Message</span></a></li>
+								<li><a href="/"><i class="icon-picture"></i><span>Gallery</span></a></li>
 							</ul>
 							<ul>
-								<li><a href="/"><i class="icon-setting"></i>Settings</a></li>
-								<li><a href="/"><i class="icon-user"></i>Log out</a></li>
+								<li><a href="/"><i class="icon-setting"></i><span>Settings</span></a></li>
+								<li><a href="/"><i class="icon-user"></i><span>Log out</span></a></li>
 							</ul>
 						</nav>
 					</div>
@@ -47,9 +48,8 @@
 						<div class="post-container">
 							<div class="write-box">
 								<div class="input-group">
-									<textarea placeholder="Write something..."
-									v-model="newPost"
-									v-on:keyup.enter="createPost(newPost)"></textarea>
+									<textarea placeholder="Write something! (Press the post button.)"
+									v-model="newPost"></textarea>
 								</div>
 								<div class="submit-group">
 									<button class="btn" type="button" v-on:click="createPost(newPost)">Post</button>
@@ -89,9 +89,7 @@
 					<section id="side">
 						<div class="side-container">
 							<aside class="popular">
-								<div class="popular-img">
-									<figure><img src="popular.jpg" alt="popular" /></figure>
-								</div>
+								<div class="popular-img"></div>
 								<div class="description">
 									<span>Popular</span>
 									<h2>Lorem ipsum dolor sit amet</h2>

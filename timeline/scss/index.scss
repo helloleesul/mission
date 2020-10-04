@@ -4,18 +4,44 @@
 $shadow: 5px 5px 30px -15px rgba(black, .3);
 $white: #fff;
 $color: #FFAE1E;
-$grey: rgba(#D8D9E1, .3);
-$lightgrey: #D8D9E1;
-$border: 1px solid $grey;
+$grey: #D8D9E1;
+$lightgrey: rgba(#D8D9E1, .3);
+$border: 1px solid $lightgrey;
 $left-width: 20%;
 $right-width: 60%;
 $per100: 100%;
+$transition: .1s ease-in-out all;
+$gap: 1.5rem;
+
+$breakpoints: (
+        'small': (max-width: 920px),
+        'medium': (max-width: 1200px),
+//         'large': (max-width: 1200px),
+) !default;
+
+@mixin respond-to($breakpoint) {
+    // If the key exists in the map
+    @if map-has-key($breakpoints, $breakpoint) {
+        // Prints a media query based on the value
+        @media #{inspect(map-get($breakpoints, $breakpoint))} {
+            @content;
+        }
+    }
+    // If the key doesn't exist in the map
+    @else {
+        @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+        + "Available breakpoints are: #{map-keys($breakpoints)}.";
+    }
+}
 
 @mixin default-font {
 	font: {
 		family: 'Roboto', 'NanumSquareRound', sans-serif;
 		size: 1.2rem;
 	}
+	@include respond-to('small') {
+		font-size: 1rem;
+    }
 }
 
 @mixin profile-img {
@@ -24,8 +50,12 @@ $per100: 100%;
 		box-shadow: $shadow;
 		width: 80px;
 		height: 80px;
-		border-radius: 64px;
+		border-radius: 100%;
 		overflow: hidden;
+		@include respond-to('small') {
+			width: 60px;
+			height: 60px;
+	    }
 		img {
 			width: $per100;
 		}
@@ -44,7 +74,7 @@ $per100: 100%;
 body {
 	@include default-font;
 	color: #222;
-	background-color: $grey;
+	background-color: $lightgrey;
 }
 
 .alttxt {
@@ -109,28 +139,42 @@ header {
 	left: 0; top: 0;
 	background-color: $white;
 	box-shadow: $shadow;
-	.wrap {
-		display: flex;
-		flex-direction: column;
-		height: $per100;
-		justify-content: space-between;
-	}
+	@include respond-to('medium') {
+		padding: 2rem;
+    }
+    @include respond-to('small') {
+	    display: none;
+    }
 	i {
 		font-size: 1.6rem;
 		margin-right: 1rem;
-		&:before {
+		&::before {
 			vertical-align: middle;
-			margin: 0;
 		}
 	}
 	ul {
-		margin-bottom: 5rem;
+		margin-top: 5rem;
 	}
 	li {
 		margin-top: 2rem;
 		font-weight: 600;
-		&.active {
+		&.active a, a:hover {
 			color: $color;
+			transition: $transition;
+		}
+	}
+	.wrap > * {
+		margin-bottom: 5rem;
+	}
+	.search {
+		display: flex;
+		color: $grey;
+		i {
+			@include default-font;
+		}
+		input::placeholder {
+			color: $lightgrey;
+			font-weight: 600;
 		}
 	}
 	.profile {
@@ -138,16 +182,30 @@ header {
 			@include profile-img;
 			margin-bottom: 2rem;
 		}
+		h1 {
+			font-weight: 600;
+			margin-bottom: 1rem;
+		}
+		span {
+			color: $grey;
+		}
 	}
 }
 
 main {
 	width: $right-width;
 	margin-left: $left-width;
+	@include respond-to('medium') {
+		width: $right-width + $left-width;
+    }
+    @include respond-to('small') {
+		width: $per100;
+		margin-left: 0;
+    }
 }
 
 #timeline {
-	padding: 1.5rem;
+	padding: $gap;
 	.post-container {
 		background-color: $white;
 		box-shadow: $shadow;
@@ -180,11 +238,11 @@ main {
 
 .post-box {
 	padding: 2rem;
-	transition: .2s ease-in-out all;
+	transition: $transition;
 	border-bottom: $border;
 	.post-wrap {
 		display: flex;
-		transition: all .2s ease-in-out;
+		transition: $transition;
 		.profile-img {
 			@include profile-img;
 		}
@@ -224,37 +282,41 @@ main {
 
 #side {
 	width: $left-width;
-	height: $per100;
 	padding-left: 0;
 	position: fixed;
 	right: 0; top: 0;
+	height: $per100;
+	overflow: scroll;
 	.side-container {
-		height: $per100;
-		padding: 1.5rem;
+		padding: $gap;
 		padding-left: 0;
 		display: grid;
-		grid-gap: 2rem;
+		grid-gap: $gap;
 		grid-template-columns: $per100;
 	}
+	@include respond-to('medium') {
+		display: none;
+    }
 }
 
 aside {
 	background-color: $white;
 	border-radius: .5rem;
-	overflow: scroll;
+	overflow: hidden;
 	box-shadow: $shadow;
 }
 
 .popular {
 	.popular-img {
 		height: 240px;
-		overflow: scroll;
-	}
-	img {
-		width: $per100;
+		background: {
+			image: url('../popular.jpg');
+			size: cover;
+			repeat: no-repeat;
+		}
 	}
 	.description {
-		padding: 2rem;
+		padding: $gap;
 		span {
 			color: $color;
 			font-size: 1rem;
@@ -267,19 +329,18 @@ aside {
 		p {
 			font-size: 1rem;
 			line-height: 1.4;
-			color: $lightgrey;
+			color: $grey;
 		}
 	}
 }
 
 .people {
-	padding: 2rem;
+	padding: $gap;
 	.profile-img {
 		@include profile-img;
 	}
 	li {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		margin-top: 1rem;
 		.info {
@@ -288,7 +349,7 @@ aside {
 	}
 	h2 {
 		font-weight: 600;
-		margin-bottom: 2rem;
+		margin-bottom: $gap;
 	}
 	p {
 		font-size: 1rem;
@@ -297,7 +358,7 @@ aside {
 		margin-bottom: .2rem;
 	}
 	span {
-		color: $lightgrey;
+		color: $grey;
 		font-size: .8rem;
 	}
 }
