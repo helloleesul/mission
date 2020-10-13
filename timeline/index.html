@@ -11,15 +11,16 @@
 		<link rel="stylesheet" href="css/fontello/css/fontello-embedded.css">
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 	</head>
-	<body>
+	<body class="reset">
 		<div id="app">
 			<div class="container">
 				<header>
 					<div class="wrap">
 						<div class="search">
 							<i class="icon-search"></i>
-							<input type="search" placeholder="Search" />
+							<input type="search" placeholder="Search" v-model="searchWord" />
 						</div>
 						<div class="profile">
 							<div class="profile-img">
@@ -48,31 +49,34 @@
 						<div class="post-container">
 							<div class="write-box">
 								<div class="input-group">
-									<textarea placeholder="Write something! (Press the post button.)"
-									v-model="newPost"></textarea>
+									<textarea placeholder="Write something!"
+									v-model="newPost"
+									v-on:keyup.enter="createPost(newPost)"></textarea>
 								</div>
 								<div class="submit-group">
 									<button class="btn" type="button" v-on:click="createPost(newPost)">Post</button>
+									<div v-if="postLoading">
+										<div id="postLoading-box"></div>
+									</div>
 								</div>
 							</div>
 							<!-- write-box -->
 							
-							<div v-for="(post, index) in posts" class="post-box">
+							<div v-for="(item, index) in postBox" class="post-box" :class="{blur: index === blurPost}">
 								<div class="post-wrap">
 									<div class="profile-img">
 										<figure><img src="member.png" alt="member" /></figure>
 									</div>
 									<div class="post-group">
-										<span class="name">{{ post.title }}</span>
-										<p class="body">{{ post.body }}</p>
+										<span class="name">{{ item.title }}</span>
+										<p class="body" v-html="highlight(item.body)">{{ item.body }}</p>
 									</div>
 									<div class="btn-group">
 										<button type="button" 
-										v-on:click="toggleMenu($event, post)">&middot;&middot;&middot;</button>
+										v-on:click="toggleMenu(index, item)">&middot;&middot;&middot;</button>
 										<ul class="dropdown-menu" 
-										v-if="post.active"
-										:class="{active: post.active}">
-											<li><button type="button" class="btn" v-on:click="deletePost(post.id,index)">delete</button></li>
+										v-if="item.active" :class="{hide: index === blurPost}">
+											<li><button type="button" class="btn" v-on:click="deletePost(item.id,index)">delete</button></li>
 								        </ul>
 									</div>
 								</div>
@@ -119,17 +123,21 @@
 		</div>
 		<!-- app -->
 		
+		<script src="./data.js"></script>
 		<script>
 			var myName = 'Sul Lee';
 			
 			new Vue({
 				el: "#app",
 				data: {
+					searchWord: '',
 					endOfTheScreen: false,
 					isLoading: false,
 					page: 1,
 					limit: 10,
-					posts: [],
+					post: timelineData,
+					//postBox: timelineData,
+					//postBox: [],
 					autoLoading: true,
 					newPost: '',
 					people: [
@@ -145,7 +153,9 @@
 							name: 'Barbara Doe',
 							job: 'Model',
 						},
-					]
+					],
+					blurPost: false,
+					postLoading: false,
 				},
 				
 				//  watch: 감시자 역할, 지정한 대산의 값이 변경될 때마다 정의한 함수가 실행.
@@ -163,35 +173,46 @@
 					window.onscroll = () => {
 						this.endOfTheScreen = this.scrollCheck();
 					};
-					this.loadPosts();
+					//this.loadPosts();
 				},
 				
 				methods: {
-					toggleMenu($event, post) {
-				        if (post.active) {
-					        post.active = false;
-				        } else if (!post.active) {
-					        Vue.set(post, 'active', true);
+				    toggleMenu(index, item) {
+						this.postBox.forEach(function(el, idx) {
+							if ( index === idx ) return;
+							el.active = false
+						});
+						
+				        if ( item.active === true ) {
+					        item.active = false;
+				        } else if (item.active === false) {
+							item.active = true;
 					    }
 				    },
 					createPost(newPost) {
 						if (newPost != null) {
+							this.postLoading = true;
+														
 							axios.defaults.headers.post['Content-Type'] = 'application/json';
 							axios.post('https://jsonplaceholder.typicode.com/posts',{
 								title: myName, body: this.newPost
 							}).then((res) => {
-								this.posts.unshift(res.data);
+								this.postBox.unshift(res.data);
+								
+								this.postLoading = false;
 							})
 							this.newPost = null;
 						}
 					},
-					deletePost(id,index) {
+					deletePost(id, index) {
+						this.blurPost = index;
+						
 						axios.delete('https://jsonplaceholder.typicode.com/posts/' + id)
 						.then((res) => {
-							this.posts.splice(index, 1);
+							this.postBox.splice(index, 1);
+							
+							this.blurPost =! index;
 						})
-						
-						console.log(this.posts)
 					},
 					scrollCheck() {
 						return window.scrollY + window.innerHeight === document.documentElement.offsetHeight;
@@ -203,13 +224,32 @@
 							axios.get('https://jsonplaceholder.typicode.com/posts' + "?_page=" + page + "&_limit=" + limit)
 							.then((res) => {
 								for (let i in res.data) {
-									self.posts.push(res.data[i]);
+									self.postBox.push(res.data[i]);
 								}
 								self.isLoading = false;
 							});
 						}, 500);
+					},
+					highlight(text) {
+						return text.replace(new RegExp( this.searchWord, 'gi'), '<span class="highlighted">$&</span>' );
 					}
-				}
+				},
+				
+				computed: {
+					postBox() {
+						if ( this.searchWord ) {
+							return this.post.filter( item => {
+								return item.body.toLowerCase().includes( this.searchWord.toLowerCase() );
+							})
+						} else {
+							return this.post;
+						}
+					}
+				},
+				
+				mounted() {
+					$('body').removeClass('reset');
+				},
 			})
 		</script>
 	</body>

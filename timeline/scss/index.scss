@@ -71,6 +71,13 @@ $breakpoints: (
 	color: $white;
 }
 
+body.reset {
+	* {
+		font-size: 0;
+		color: opacity;
+	}
+}
+
 body {
 	@include default-font;
 	color: #222;
@@ -80,6 +87,10 @@ body {
 .alttxt {
 	position: absolute;
 	left: -9999999px;
+}
+
+.highlighted {
+	background-color: rgba($color, .5);
 }
 
 a {
@@ -92,6 +103,7 @@ input, button, textarea {
 	background: none;
 	outline: none;
 	padding: 0;
+	resize: none;
 	@include default-font;
 }
 
@@ -112,6 +124,16 @@ button {
 	box-shadow: $shadow;
 }
 
+#postLoading-box {
+	border: 3px solid transparent;
+    border-top-color: $color;
+    border-bottom-color: $color;
+    border-radius: 50%;
+    animation: rotation .8s ease infinite;
+    width: 2rem;
+    height: 2rem;
+}
+
 #loading-box {
 	width: 2rem;
 	height: 2rem;
@@ -121,9 +143,14 @@ button {
 }
 
 @keyframes loading {
-    0% {   transform: rotate(0deg); border-radius: $per100; }
-    50% {  transform: rotate(90deg); border-radius: 0; }
+    0% { transform: rotate(0deg); border-radius: $per100; }
+    50% { transform: rotate(90deg); border-radius: 0; }
     100% { transform: rotate(180deg); border-radius: $per100; }
+}
+
+@keyframes rotation{
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .container {
@@ -172,9 +199,12 @@ header {
 		i {
 			@include default-font;
 		}
-		input::placeholder {
+		input {
+			width: 100%;
+			&::placeholder {
 			color: $lightgrey;
 			font-weight: 600;
+			}
 		}
 	}
 	.profile {
@@ -215,6 +245,7 @@ main {
 }
 
 .write-box {
+	position: relative;
 	padding: 2rem;
 	background-color: rgba($color, .3);
 	.profile-img {
@@ -222,17 +253,26 @@ main {
 	}
 	.input-group {
 		width: $per100;
+		margin-bottom: $gap;
+		background-color: rgba($white, .5);
+		border-radius: .5rem;
 		textarea {
-			resize: none;
-			height: 8rem;
 			width: inherit;
+			height: 4.5rem;
+			padding: $gap;
+			transition: $transition;
 			&::placeholder {
-				color: $white;
+				color: rgba($color, .5);
+			}
+			&:focus {
+				height: 10rem;
 			}
 		}
 	}
 	.submit-group {
-		
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	}
 }
 
@@ -240,6 +280,10 @@ main {
 	padding: 2rem;
 	transition: $transition;
 	border-bottom: $border;
+	&.blur .post-wrap {
+		filter: blur(5px);
+		opacity: .5;
+	}
 	.post-wrap {
 		display: flex;
 		transition: $transition;
@@ -271,6 +315,9 @@ main {
 			.dropdown-menu {
 				position: absolute;
 				right: 0;
+				&.hide {
+					display: none;
+				}
 			}
 		}
 	}
