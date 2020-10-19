@@ -190,18 +190,18 @@
 					    }
 				    },
 					createPost(newPost) {
-						if (newPost != null) {
+						if (newPost != '') {
 							this.postLoading = true;
 														
 							axios.defaults.headers.post['Content-Type'] = 'application/json';
 							axios.post('https://jsonplaceholder.typicode.com/posts',{
-								title: myName, body: this.newPost
+								title: myName, body: this.newPost, active: false
 							}).then((res) => {
 								this.postBox.unshift(res.data);
 								
 								this.postLoading = false;
 							})
-							this.newPost = null;
+							this.newPost = '';
 						}
 					},
 					deletePost(id, index) {
